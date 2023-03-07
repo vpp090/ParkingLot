@@ -101,7 +101,6 @@ namespace Application
             {
                 RegistrationNumber = registrationNumber,
                 TotalCharge = totalCharge,
-                VehicleExited = true
             };
 
             var response = new ServiceResponse<ParkingExitDto>
@@ -111,6 +110,40 @@ namespace Application
             };
 
             await _dataContext.SaveChangesAsync();
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<ParkingExitDto>> GetVehicle(string registrationNumber)
+        {
+            var vehicle = await _dataContext.Vehicles.SingleOrDefaultAsync(v => v.RegistrationNumber == registrationNumber);
+
+            var exitDto = new ParkingExitDto
+            {
+                RegistrationNumber = vehicle.RegistrationNumber,
+                TotalCharge = _calculatorAlgorithm.CalculateCharges(vehicle),
+                Vehicle = vehicle
+            };
+
+            var response = new ServiceResponse<ParkingExitDto>
+            {
+                Data = exitDto,
+                Success = true,
+                
+            };
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<List<Vehicle>>> GetAllVehicles()
+        {
+            var vehicles = await _dataContext.Vehicles.ToListAsync();
+
+            var response = new ServiceResponse<List<Vehicle>>
+            {
+                Data = vehicles,
+                Success = true
+            };
 
             return response;
         }

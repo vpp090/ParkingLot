@@ -8,6 +8,9 @@ namespace Application
         Task<ServiceResponse<int>> GetAvailableSpaces();
         Task<ServiceResponse<decimal>> CheckAccumulatedCharge(string registrationNumber);
         Task<ServiceResponse<Vehicle>> ParkingEntry(ParkingEntryDto vehicle);
-        Task<ServiceResponse<ParkingExitDto>> ParkingExit(string registrationNumber);   
+        Task<ServiceResponse<ParkingExitDto>> ParkingExit(string registrationNumber);
+
+        Task<ServiceResponse<ParkingExitDto>> GetVehicle(string registrationNumber);
+        Task<ServiceResponse<List<Vehicle>>> GetAllVehicles();   
     }
 }

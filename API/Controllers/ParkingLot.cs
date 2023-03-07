@@ -16,6 +16,18 @@ namespace API.Controllers
             _parkingService = parkingService;
         }
 
+        [HttpGet("/getvehicle/{registrationNumber}")]
+        public async Task<ActionResult<ServiceResponse<ParkingExitDto>>> GetVehicle(string registrationNumber)
+        {
+            return await _parkingService.GetVehicle(registrationNumber);
+        }
+
+        [HttpGet("/getallvehicles")]
+        public async Task<ActionResult<ServiceResponse<List<Vehicle>>>> GetAllVehicles()
+        {
+            return await _parkingService.GetAllVehicles();
+        }
+
         [HttpGet("/availability")]
         public async Task<ActionResult<ServiceResponse<int>>> GetAvailableSpaces()
         {
