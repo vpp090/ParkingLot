@@ -118,6 +118,9 @@ namespace Application
         {
             var vehicle = await _dataContext.Vehicles.Include(v => v.Category).Include(v => v.DiscountType).SingleOrDefaultAsync(v => v.RegistrationNumber == registrationNumber);
 
+            if(vehicle == null)
+                return null;
+
             return MapVehicle(vehicle);
         }
 

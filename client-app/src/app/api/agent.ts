@@ -10,7 +10,8 @@ const requests = {
 }
 
 const Vehicles = {
-    list: () => requests.get<GetVehicle[]>('/getallvehicles')
+    list: () => requests.get<GetVehicle[]>('/getallvehicles'),
+    getSingle: (regNumber: string) => requests.get<GetVehicle>(`/getvehicle/${regNumber}`)
 }
 
 const agent = {

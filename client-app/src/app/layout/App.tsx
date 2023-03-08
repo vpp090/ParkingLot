@@ -13,7 +13,16 @@ function App() {
     apiCall();
   }, [])
 
-  function apiCall() {
+  function apiCallSingle(regNumber: string){
+      agent.Vehicles.getSingle(regNumber).then(response => {
+          if(response)
+            setVehicles([response])
+          else
+            setVehicles([]);
+      });
+  }
+
+  function  apiCall() {
     agent.Vehicles.list().then(response => {
       setVehicles(response);
     })
@@ -24,9 +33,7 @@ function App() {
          apiCall();
      }
      else{
-        var result = vehicles.filter(v => v.registrationNumber === input);
-       
-        setVehicles(result)
+        apiCallSingle(input);
      }
   }
 
