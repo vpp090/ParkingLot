@@ -8,7 +8,7 @@ namespace Application
         {
             var tempDate = vehicle.VehicleEntryTime;
             decimal totalCharge = default;
-
+         
             while(tempDate < DateTime.Now)
             {
                 var hour = tempDate.Hour;
@@ -26,7 +26,7 @@ namespace Application
             
             if(vehicle.DiscountType != null)
             {
-                totalCharge -= totalCharge * vehicle.DiscountType.DiscountPercentage;
+                totalCharge = totalCharge - (totalCharge * ((decimal)vehicle.DiscountType.DiscountPercentage/100));
             }
             
             return totalCharge;

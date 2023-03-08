@@ -32,7 +32,7 @@ namespace Application
 
         public async Task<ServiceResponse<decimal>> CheckAccumulatedCharge(string registrationNumber)
         {
-            var selectedVehicle = await _dataContext.Vehicles.Include(v => v.Category).SingleOrDefaultAsync(v => v.RegistrationNumber == registrationNumber);
+            var selectedVehicle = await _dataContext.Vehicles.Include(v => v.Category).Include(v => v.DiscountType).SingleOrDefaultAsync(v => v.RegistrationNumber == registrationNumber);
 
             var totalCharge = _calculatorAlgorithm.CalculateCharges(selectedVehicle);
 
@@ -61,7 +61,7 @@ namespace Application
                 response.Success = false;
                 response.ErrorMessage = ErrorMessages.RegistrationNumberAlreadyIn;
             }
-            else if (parkingLot.Capacity <= 0)
+            else if (parkingLot.Capacity < category.SpacesUsed)
             {
                 response.Data = null;
                 response.Success = false;
@@ -90,10 +90,10 @@ namespace Application
 
         public async Task<ServiceResponse<ParkingExitDto>> ParkingExit(string registrationNumber)
         {
-            var vehicle = await _dataContext.Vehicles.Include(v => v.Category).Include(v => v.DiscountType).SingleOrDefaultAsync();
+            var vehicle = await _dataContext.Vehicles.Include(v => v.Category).Include(v => v.DiscountType).SingleOrDefaultAsync(v => v.RegistrationNumber == registrationNumber);
             var totalCharge = _calculatorAlgorithm.CalculateCharges(vehicle);
             var parkingLot = await _dataContext.ParkingLot.SingleOrDefaultAsync();
-            parkingLot.Capacity -= vehicle.Category.SpacesUsed;
+            parkingLot.Capacity += vehicle.Category.SpacesUsed;
 
             _dataContext.Vehicles.Remove(vehicle);
 
@@ -116,7 +116,7 @@ namespace Application
 
         public async Task<VehicleDto> GetVehicle(string registrationNumber)
         {
-            var vehicle = await _dataContext.Vehicles.Include(v => v.DiscountType).SingleOrDefaultAsync(v => v.RegistrationNumber == registrationNumber);
+            var vehicle = await _dataContext.Vehicles.Include(v => v.Category).Include(v => v.DiscountType).SingleOrDefaultAsync(v => v.RegistrationNumber == registrationNumber);
 
             return MapVehicle(vehicle);
         }
@@ -133,7 +133,7 @@ namespace Application
         private VehicleDto MapVehicle(Vehicle vehicle) //TODO use Automapper here
         {
             var totalCharge = _calculatorAlgorithm.CalculateCharges(vehicle);
-            decimal totalDiscount = vehicle.DiscountType != null ? totalCharge * vehicle.DiscountType.DiscountPercentage : 0;
+            decimal totalDiscount = vehicle.DiscountType != null ? totalCharge * (decimal)vehicle.DiscountType.DiscountPercentage/100 : default;
             
 
             var dto = new VehicleDto
