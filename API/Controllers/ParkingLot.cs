@@ -17,13 +17,13 @@ namespace API.Controllers
         }
 
         [HttpGet("/getvehicle/{registrationNumber}")]
-        public async Task<ActionResult<ServiceResponse<ParkingExitDto>>> GetVehicle(string registrationNumber)
+        public async Task<ActionResult<VehicleDto>> GetVehicle(string registrationNumber)
         {
             return await _parkingService.GetVehicle(registrationNumber);
         }
 
         [HttpGet("/getallvehicles")]
-        public async Task<ActionResult<ServiceResponse<List<Vehicle>>>> GetAllVehicles()
+        public async Task<ActionResult<List<VehicleDto>>> GetAllVehicles()
         {
             return await _parkingService.GetAllVehicles();
         }

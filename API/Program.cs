@@ -17,6 +17,13 @@ builder.Services.AddDbContext<DataContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddCors(opt => {
+    opt.AddPolicy("CorsPolicy", policy => 
+    {
+        policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+    });
+});
+
 builder.Services.AddScoped<IParkingService, ParkingService>();
 builder.Services.AddScoped<ICalculatorAlgorithm, CalculatorAlgorithm>();
 
@@ -30,6 +37,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 

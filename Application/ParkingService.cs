@@ -114,38 +114,37 @@ namespace Application
             return response;
         }
 
-        public async Task<ServiceResponse<ParkingExitDto>> GetVehicle(string registrationNumber)
+        public async Task<VehicleDto> GetVehicle(string registrationNumber)
         {
-            var vehicle = await _dataContext.Vehicles.SingleOrDefaultAsync(v => v.RegistrationNumber == registrationNumber);
+            var vehicle = await _dataContext.Vehicles.Include(v => v.DiscountType).SingleOrDefaultAsync(v => v.RegistrationNumber == registrationNumber);
 
-            var exitDto = new ParkingExitDto
-            {
-                RegistrationNumber = vehicle.RegistrationNumber,
-                TotalCharge = _calculatorAlgorithm.CalculateCharges(vehicle),
-                Vehicle = vehicle
-            };
-
-            var response = new ServiceResponse<ParkingExitDto>
-            {
-                Data = exitDto,
-                Success = true,
-                
-            };
-
-            return response;
+            return MapVehicle(vehicle);
         }
 
-        public async Task<ServiceResponse<List<Vehicle>>> GetAllVehicles()
+        public async Task<List<VehicleDto>> GetAllVehicles()
         {
-            var vehicles = await _dataContext.Vehicles.ToListAsync();
+            var vehicles = await _dataContext.Vehicles.Include(v => v.DiscountType).Include(v => v.Category).ToListAsync();
 
-            var response = new ServiceResponse<List<Vehicle>>
+            var vehiclesDtos = vehicles.Select(v => MapVehicle(v)).ToList();
+            
+            return vehiclesDtos;
+        }
+
+        private VehicleDto MapVehicle(Vehicle vehicle) //TODO use Automapper here
+        {
+            var totalCharge = _calculatorAlgorithm.CalculateCharges(vehicle);
+            decimal totalDiscount = vehicle.DiscountType != null ? totalCharge * vehicle.DiscountType.DiscountPercentage : 0;
+            
+
+            var dto = new VehicleDto
             {
-                Data = vehicles,
-                Success = true
+                RegistrationNumber = vehicle.RegistrationNumber,
+                DateEntry = vehicle.VehicleEntryTime,
+                TotalCharge = totalCharge,
+                TotalDiscount = totalDiscount,
             };
 
-            return response;
+            return dto;
         }
     }
 }

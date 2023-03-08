@@ -10,7 +10,7 @@ namespace Application
         Task<ServiceResponse<Vehicle>> ParkingEntry(ParkingEntryDto vehicle);
         Task<ServiceResponse<ParkingExitDto>> ParkingExit(string registrationNumber);
 
-        Task<ServiceResponse<ParkingExitDto>> GetVehicle(string registrationNumber);
-        Task<ServiceResponse<List<Vehicle>>> GetAllVehicles();   
+        Task<VehicleDto> GetVehicle(string registrationNumber);
+        Task<List<VehicleDto>> GetAllVehicles();   
     }
 }
